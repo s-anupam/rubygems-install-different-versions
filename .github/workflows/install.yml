@@ -1,0 +1,74 @@
+on: [push, repository_dispatch]
+
+jobs:
+  bundle-install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby 2.6
+        uses: actions/setup-ruby@v1
+        with:
+          version: 2.6.x
+
+      - name: Add Gemfile
+        run: |
+          cat > Gemfile << EOM
+          source "https://rubygems.pkg.github.com/${{ github.repository_owner }}" do
+            gem "rubygems-publish"
+          end
+          EOM
+
+      - name: Add main.rb
+        run: |
+          cat > main.rb << EOM
+          require 'rubygems-publish'
+          RubyGemsPublish.hello
+          EOM
+
+      - name: Authenticate using Bundler
+        run: bundle config https://rubygems.pkg.github.com/${{ github.repository_owner }} token:${{ secrets.READ_PACKAGES_TOKEN }}
+
+      - name: Install using Bundler
+        run: bundle install
+
+      - name: Run using bundle exec
+        run: bundle exec ruby main.rb
+
+  gem-install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby 2.6
+        uses: actions/setup-ruby@v1
+        with:
+          version: 2.6.x
+
+      - name: Add ~/.gemrc
+        run: |
+          cat > ~/.gemrc << EOM
+          ---
+          :backtrace: false
+          :bulk_threshold: 1000
+          :sources:
+          - https://rubygems.org/
+          - https://token:${{ secrets.READ_PACKAGES_TOKEN }}@rubygems.pkg.github.com/${{ github.repository_owner }}/
+          :update_sources: true
+          :verbose: true  
+          EOM
+
+      - name: Install Gem
+        run: gem install rubygems-publish
+
+      - name: Add main.rb
+        run: |
+          cat > main.rb << EOM
+          require 'rubygems-publish'
+          RubyGemsPublish.hello
+          EOM
+
+      - name: Run using ruby
+        run: ruby main.rb
