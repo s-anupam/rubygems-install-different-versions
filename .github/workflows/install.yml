@@ -4,13 +4,17 @@ jobs:
   gem-install:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        ruby-version: ['2.5.x', '2.6.x']
+
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Ruby 2.6.x
+      - name: Setup Ruby ${{ matrix.ruby-version }}
         uses: actions/setup-ruby@v1
         with:
-          ruby-version: 2.6.x
+          ruby-version: ${{ matrix.ruby-version }}
 
       - name: Show gem version
         run: gem -v
