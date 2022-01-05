@@ -15,7 +15,7 @@ jobs:
       - name: Add Gemfile
         run: |
           cat > Gemfile << EOM
-          source "https://rubygems.pkg.github.com/${{ github.repository_owner }}" do
+          source "https://rubygems.pkg.github.com/github-packages-examples" do
             gem "rubygems-publish"
           end
           EOM
@@ -28,7 +28,7 @@ jobs:
           EOM
 
       - name: Authenticate using Bundler
-        run: bundle config https://rubygems.pkg.github.com/${{ github.repository_owner }} token:${{ secrets.READ_PACKAGES_TOKEN }}
+        run: bundle config https://rubygems.pkg.github.com/github-packages-examples token:${{ secrets.READ_PACKAGES_TOKEN }}
 
       - name: Install using Bundler
         run: bundle install
@@ -55,7 +55,7 @@ jobs:
           :bulk_threshold: 1000
           :sources:
           - https://rubygems.org/
-          - https://token:${{ secrets.READ_PACKAGES_TOKEN }}@rubygems.pkg.github.com/${{ github.repository_owner }}/
+          - https://token:${{ secrets.READ_PACKAGES_TOKEN }}@rubygems.pkg.github.com/github-packages-examples/
           :update_sources: true
           :verbose: true  
           EOM
