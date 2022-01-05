@@ -47,6 +47,9 @@ jobs:
         with:
           version: 2.6.x
 
+      - name: Show gem version
+        run: gem -v
+
       - name: Add ~/.gemrc
         run: |
           cat > ~/.gemrc << EOM
